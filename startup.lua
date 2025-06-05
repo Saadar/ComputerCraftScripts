@@ -2,8 +2,8 @@ peripheral.find("modem", rednet.open)
 local position = { x = 0, y = 0, z = 0 }
 local facing = 0
 os.sleep(1)
-os.setComputerLabel("SethBot"..os.getComputerID())
-position.x, position.y, position.z = gps.locate()     --{x=0,y=0,z=0}
+os.setComputerLabel("SethBot" .. os.getComputerID())
+position.x, position.y, position.z = gps.locate() --{x=0,y=0,z=0}
 local function main()
     local totalshafts = 0
     local currentshafts = 0
@@ -185,9 +185,16 @@ local function main()
 
     local function broadcast(customStatus)
         if customStatus == nil then customStatus = chunkStatus end
-        rednet.broadcast("fuel="..turtle.getFuelLevel()..", x="..position.x..", y="..position.y..", z="..position.z..", currentShafts="..currentshafts..", totalShafts="..totalshafts..", status="..customStatus)
+        rednet.broadcast("fuel=" ..
+        turtle.getFuelLevel() ..
+        ", x=" ..
+        position.x ..
+        ", y=" ..
+        position.y ..
+        ", z=" .. position.z ..
+        ", currentShafts=" .. currentshafts .. ", totalShafts=" .. totalshafts .. ", status=" .. customStatus)
     end
-    
+
     local function gotoloc(location)
         if position.y < location.y then
             while position.y < location.y do
@@ -279,7 +286,9 @@ local function main()
 
     local function detectfacing()
         while oldForward() == false do
-            turtle.dig()
+            if turtle.dig() == false then
+                turtle.turnRight()
+            end
         end
         local newpos = {}
         newpos.x, newpos.y, newpos.z = gps.locate()
@@ -302,10 +311,62 @@ local function main()
         turtle.back()
     end
 
+    local function unstuck(direction)
+        local unstuckY = position.y
+        saveTable(position, "unstuckPosition")
+        ::unstuckstart::
+        while turtle.forward() == false do
+            if turtle.dig() == false then
+                turtle.turnRight()
+            end
+        end
+        turtle.turnRight()
+        turtle.turnRight()
+        ::unstucktwo::
+        if (direction == "up") then
+            if turtle.up() == false then
+                if turtle.digUp() == false then
+                    while position.y > unstuckY do
+                        turtle.down()
+                    end
+                    turtle.forward()
+                    goto unstuckstart
+                else
+                    turtle.up()
+                end
+            end
+        elseif (direction == "down") then
+            if turtle.down() == false then
+                if turtle.digDown() == false then
+                    while position.y < unstuckY do
+                        turtle.up()
+                    end
+                    turtle.forward()
+                    goto unstuckstart
+                else
+                    turtle.down()
+                end
+            end
+        end
+        while turtle.forward() == false do
+            if turtle.dig() == false then
+                goto unstucktwo
+            end
+        end
+        fs.delete("unstuckPosition")
+    end
+
     local function deposit()
         turtle.select(enderchest)
         while turtle.placeUp() == false do
-            turtle.digUp()
+            if turtle.digUp() == false then
+                if turtle.down() == false then
+                    turtle.digDown()
+                    if turtle.down() == false then
+                        broadcast("stuck")
+                    end
+                end
+            end
         end
         for i = 4, 16 do
             turtle.select(i)
@@ -432,8 +493,8 @@ local function main()
             end
             while turtle.down() == false do
                 if turtle.digDown() == false then
-                    broadcast("stuck")
-                    os.sleep(10)
+                    unstuck("down")
+                    broadcast("unstuckify")
                 end
             end
 
@@ -485,8 +546,8 @@ local function main()
             end
             while turtle.up() == false do
                 if turtle.digUp() == false then
-                    broadcast("stuck")
-                    os.sleep(10)
+                    unstuck("up")
+                    broadcast("unstuckify")
                 end
             end
 
@@ -570,6 +631,10 @@ local function main()
     end
 
     detectfacing()
+    if fs.exists("unstuckPosition") then
+        local tempPos = loadTable("unstuckPosition")
+        gotoloc(tempPos)
+    end
     if chunkStatus ~= "returning to floor" then
         while #shafts > 0 do
             gotolocation = getClosestLocation(shafts, position)
@@ -621,7 +686,7 @@ local function main()
     end
 
     fs.delete("shaftsDB")
-    
+
     if (position.y == lowestY or chunkStatus == "returning to floor") then
         chunkStatus = "returning to floor"
         saveText(chunkStatus, "chunkStatus")
@@ -629,7 +694,7 @@ local function main()
     end
 
     deposit()
-    
+
     --fs.delete("chunkStatus")
     chunkStatus = "done"
     saveText(chunkStatus, "chunkStatus")
