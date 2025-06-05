@@ -330,6 +330,7 @@ local function main()
                         turtle.down()
                     end
                     turtle.forward()
+                    turtle.turnLeft()
                     goto unstuckstart
                 else
                     turtle.up()
@@ -342,6 +343,7 @@ local function main()
                         turtle.up()
                     end
                     turtle.forward()
+                    turtle.turnLeft()
                     goto unstuckstart
                 else
                     turtle.down()
