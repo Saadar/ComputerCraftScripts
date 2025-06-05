@@ -467,7 +467,6 @@ local function main()
     local function shaftmineDown()
         checkAbove()
 
-
         for i = 1, 4 do
             while turtle.detect() do
                 if turtle.dig() == false then
@@ -527,6 +526,7 @@ local function main()
 
     local function shaftmineUp()
         while position.y < floorY do
+            ::shaftmineupstart::
             for i = 1, 4 do
                 while turtle.detect() do
                     if turtle.dig() == false then
@@ -548,6 +548,7 @@ local function main()
                 if turtle.digUp() == false then
                     unstuck("up")
                     broadcast("unstuckify")
+                    goto shaftmineupstart
                 end
             end
 
