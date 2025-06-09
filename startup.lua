@@ -780,8 +780,11 @@ local function background()
             position.x, position.y, position.z = gps.locate()
             os.sleep(1)
             while position.y < floorY + 1 do
-                turtle.up()
-                position.y = position.y + 1
+                if turtle.up() == false then
+                    turtle.digUp()
+                else
+                    position.y = position.y + 1
+                end
             end
             turtle.select(spotloader)
             turtle.placeDown()
