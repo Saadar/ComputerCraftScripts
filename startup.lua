@@ -756,6 +756,92 @@ end
 
 local instructions = ""
 
+local function gotoChunk(moveToChunk)
+    if fs.exists("moveToChunk") then
+        local moveToChunk = loadText("moveToChunk")
+        shell.run("wget", "run",
+            "https://raw.githubusercontent.com/Saadar/ComputerCraftScripts/refs/heads/main/goto.lua",
+            moveToChunk)
+    else
+        saveText(moveToChunk, "moveToChunk")
+        position.x, position.y, position.z = gps.locate()
+        os.sleep(1)
+        while position.y < floorY + 1 do
+            if turtle.up() == false then
+                turtle.digUp()
+            else
+                position.y = position.y + 1
+            end
+        end
+        turtle.select(spotloader)
+        turtle.placeDown()
+        turtle.digUp()
+        while position.y < 260 do
+            if turtle.up() == false then
+                turtle.digUp()
+            else
+                position.y = position.y + 1
+            end
+        end
+        turtle.placeUp()
+        while position.y > floorY + 1 do
+            if turtle.down() == false then
+                turtle.digDown()
+            else
+                position.y = position.y - 1
+            end
+        end
+        turtle.digDown()
+        while position.y < 260 do
+            if turtle.up() == false then
+                turtle.digUp()
+            else
+                position.y = position.y + 1
+            end
+        end
+
+        --print("Moving to new chunk")
+
+        shell.run("wget", "run",
+            "https://raw.githubusercontent.com/Saadar/ComputerCraftScripts/refs/heads/main/goto.lua",
+            moveToChunk)
+    end
+    --print("Done moving to new chunk")
+
+    position.x, position.y, position.z = gps.locate()
+    os.sleep(1)
+    turtle.select(spotloader)
+    while position.y > floorY + 1 do
+        if turtle.down() == false then
+            turtle.digDown()
+        else
+            position.y = position.y - 1
+        end
+    end
+    turtle.placeDown()
+    while position.y < 260 do
+        if turtle.up() == false then
+            turtle.digUp()
+        else
+            position.y = position.y + 1
+        end
+    end
+    turtle.digUp()
+    while position.y > floorY + 1 do
+        if turtle.down() == false then
+            turtle.digDown()
+        else
+            position.y = position.y - 1
+        end
+    end
+    turtle.placeUp()
+    turtle.digDown()
+    turtle.down()
+    if fs.exists("moveToChunk") then fs.delete("moveToChunk") end
+    if fs.exists("chunkStatus") then fs.delete("chunkStatus") end
+    os.reboot()
+end
+
 local function background()
     if fs.exists("moveToChunk") then
         local moveToChunk = loadText("moveToChunk")
@@ -776,83 +862,7 @@ local function background()
             os.reboot()
         elseif string.startsWith(message, "goto") then
             print(message)
-            saveText(string.sub(message, 6, string.len(message)),"moveToChunk")
-            position.x, position.y, position.z = gps.locate()
-            os.sleep(1)
-            while position.y < floorY + 1 do
-                if turtle.up() == false then
-                    turtle.digUp()
-                else
-                    position.y = position.y + 1
-                end
-            end
-            turtle.select(spotloader)
-            turtle.placeDown()
-            turtle.digUp()
-            while position.y < 260 do
-                if turtle.up() == false then
-                    turtle.digUp()
-                else
-                    position.y = position.y + 1
-                end
-            end
-            turtle.placeUp()
-            while position.y > floorY + 1 do
-                if turtle.down() == false then
-                    turtle.digDown()
-                else
-                    position.y = position.y - 1
-                end
-            end
-            turtle.digDown()
-            while position.y < 260 do
-                if turtle.up() == false then
-                    turtle.digUp()
-                else
-                    position.y = position.y + 1
-                end
-            end
-
-            print("Moving to new chunk")
-
-            shell.run("wget", "run",
-                "https://raw.githubusercontent.com/Saadar/ComputerCraftScripts/refs/heads/main/goto.lua",
-                string.sub(message, 6, string.len(message)))
-
-            print("Done moving to new chunk")
-
-            position.x, position.y, position.z = gps.locate()
-            os.sleep(1)
-            turtle.select(spotloader)
-            while position.y > floorY + 1 do
-                if turtle.down() == false then
-                    turtle.digDown()
-                else
-                    position.y = position.y - 1
-                end
-            end
-            turtle.placeDown()
-            while position.y < 260 do
-                if turtle.up() == false then
-                    turtle.digUp()
-                else
-                    position.y = position.y + 1
-                end
-            end
-            turtle.digUp()
-            while position.y > floorY + 1 do
-                if turtle.down() == false then
-                    turtle.digDown()
-                else
-                    position.y = position.y - 1
-                end
-            end
-            turtle.placeUp()
-            turtle.digDown()
-            turtle.down()
-            if fs.exists("moveToChunk") then fs.delete("moveToChunk") end
-            if fs.exists("chunkStatus") then fs.delete("chunkStatus") end
-            os.reboot()
+            gotoChunk(string.sub(message, 6, string.len(message)))
         end
         --end
     end
