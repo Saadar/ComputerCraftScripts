@@ -8,9 +8,36 @@ local glass = 4
 local spotloader = 5
 local bucket = 4
 local floorY = 253
-os.sleep(1)
 os.setComputerLabel("SethBot" .. os.getComputerID())
 position.x, position.y, position.z = gps.locate() --{x=0,y=0,z=0}
+os.sleep(1)
+
+local function saveTable(tablee, name)
+    local file = fs.open(name, "w")
+    file.write(textutils.serialize(tablee))
+    file.close()
+end
+
+local function loadTable(name)
+    local file = fs.open(name, "r")
+    local data = file.readAll()
+    file.close()
+    return textutils.unserialize(data)
+end
+
+local function saveText(textt, name)
+    local file = fs.open(name, "w")
+    file.write(textt)
+    file.close()
+end
+
+local function loadText(name)
+    local file = fs.open(name, "r")
+    local data = file.readAll()
+    file.close()
+    return data
+end
+
 local function main()
     local totalshafts = 1
     local currentshafts = 0
@@ -19,32 +46,6 @@ local function main()
 
     local liquids = false
     local flat = false
-
-    local function saveTable(tablee, name)
-        local file = fs.open(name, "w")
-        file.write(textutils.serialize(tablee))
-        file.close()
-    end
-
-    local function loadTable(name)
-        local file = fs.open(name, "r")
-        local data = file.readAll()
-        file.close()
-        return textutils.unserialize(data)
-    end
-
-    local function saveText(textt, name)
-        local file = fs.open(name, "w")
-        file.write(textt)
-        file.close()
-    end
-
-    local function loadText(name)
-        local file = fs.open(name, "r")
-        local data = file.readAll()
-        file.close()
-        return data
-    end
 
     local chunkStatus = "moving to location"
     if fs.exists("chunkStatus") then
@@ -405,7 +406,7 @@ local function main()
                 end
             end
         end
-        for i = 4, 16 do
+        for i = 6, 16 do
             turtle.select(i)
             local item = turtle.getItemDetail()
             if item ~= nil and item.name == "minecraft:coal" then
@@ -756,8 +757,15 @@ end
 local instructions = ""
 
 local function background()
+    if fs.exists("moveToChunk") then
+        local moveToChunk = loadText("moveToChunk")
+        shell.run("wget", "run",
+            "https://raw.githubusercontent.com/Saadar/ComputerCraftScripts/refs/heads/main/goto.lua",
+            moveToChunk)
+    end
     while true do
         local id, message = rednet.receive("SethMaster")
+        print("received a message from SethMaster")
         --if id == 0 then
         if message == "reboot" then
             os.reboot()
@@ -767,6 +775,13 @@ local function background()
             fs.delete("chunkStatus")
             os.reboot()
         elseif string.startsWith(message, "goto") then
+            print(message)
+            saveText(string.sub(message, 6, string.len(message)),"moveToChunk")
+            position.x, position.y, position.z = gps.locate()
+            while position.y < floorY + 1 do
+                turtle.up()
+                position.y = position.y + 1
+            end
             turtle.select(spotloader)
             turtle.placeDown()
             turtle.digUp()
@@ -780,11 +795,16 @@ local function background()
                 position.y = position.y - 1
             end
             turtle.digDown()
+            while position.y < 260 do
+                turtle.up()
+                position.y = position.y + 1
+            end
 
             shell.run("wget", "run",
                 "https://raw.githubusercontent.com/Saadar/ComputerCraftScripts/refs/heads/main/goto.lua",
                 string.sub(message, 6, string.len(message)))
-
+                
+            position.x, position.y, position.z = gps.locate()
             turtle.select(spotloader)
             while position.y > floorY + 1 do
                 turtle.down()
@@ -802,6 +822,8 @@ local function background()
             end
             turtle.placeUp()
             turtle.digDown()
+            turtle.down()
+            if fs.exists("moveToChunk") then fs.delete("moveToChunk") end
             if fs.exists("chunkStatus") then fs.delete("chunkStatus") end
             os.reboot()
         end
