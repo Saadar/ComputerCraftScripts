@@ -25,14 +25,14 @@ function turtle.forward()
         turtle.dig()
         ok, err = oldForward()
     end
-    if ok then                   -- if the turtle moved
-        if facing == 0 then      -- facing +z
+    if ok then                  -- if the turtle moved
+        if facing == 0 then     -- facing +z
             position.z = position.z + 1
-        elseif facing == 1 then  -- facing -x
+        elseif facing == 1 then -- facing -x
             position.x = position.x - 1
-        elseif facing == 2 then  -- facing -z
+        elseif facing == 2 then -- facing -z
             position.z = position.z - 1
-        else                     -- must be facing +x
+        else                    -- must be facing +x
             position.x = position.x + 1
         end
     end
@@ -42,7 +42,7 @@ end
 
 local oldBack = turtle.back
 function turtle.back()
-    local ok, err = oldBack()   -- Do the movement
+    local ok, err = oldBack() -- Do the movement
     if ok == false then
         turtle.turnRight()
         turtle.turnRight()
@@ -74,7 +74,7 @@ function turtle.down()
         ok, err = oldDown()
     end
 
-    if ok then                -- if the turtle moved
+    if ok then -- if the turtle moved
         position.y = position.y - 1
     end
 
@@ -89,7 +89,7 @@ function turtle.up()
         ok, err = oldUp()
     end
 
-    if ok then              -- if the turtle moved
+    if ok then -- if the turtle moved
         position.y = position.y + 1
     end
 
@@ -281,7 +281,8 @@ local endx = startx + 16;
 local endz = startz + 16;
 
 print("goto detectfacing")
-local gotolocation = { x = math.floor(tonumber(arg1) / 16) * 16, y = tonumber(arg2), z = math.floor(tonumber(arg3) / 16) * 16 }
+local gotolocation = { x = math.floor(tonumber(arg1) / 16) * 16, y = tonumber(arg2), z = math.floor(tonumber(arg3) / 16) *
+16 }
 detectfacing()
 
 print("goto gotoloc")
@@ -348,8 +349,6 @@ if turtle.getItemCount(5) < 3 then
     turtle.digDown()
     face(0)
 end
---turtle.select(5)
---turtle.digUp()
 print("starting the chunk moving process")
 
 while position.x < gotolocation.x do
@@ -372,5 +371,5 @@ while position.z > gotolocation.z do
     face(2)
     placeSpotLoadersAndMove2()
 end
-    print("sdfsdffdssdf")
+print("sdfsdffdssdf")
 face(0)
