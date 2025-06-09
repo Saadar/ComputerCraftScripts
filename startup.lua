@@ -1,17 +1,19 @@
 peripheral.find("modem", rednet.open)
 local position = { x = 0, y = 0, z = 0 }
 local facing = 0
+local enderchest = 1
+local glasschest = 2
+local dirt = 3
+local glass = 4
+local spotloader = 5
+local bucket = 4
+local floorY = 253
 os.sleep(1)
 os.setComputerLabel("SethBot" .. os.getComputerID())
 position.x, position.y, position.z = gps.locate() --{x=0,y=0,z=0}
 local function main()
-    local totalshafts = 0
+    local totalshafts = 1
     local currentshafts = 0
-    local enderchest = 1
-    local dirt = 2
-    local glass = 3
-    local bucket = 4
-    local floorY = 253
     local plugHole = true
     local lowestY = -63
 
@@ -51,25 +53,49 @@ local function main()
         saveText(chunkStatus, "chunkStatus")
     end
 
+    local function broadcast(customStatus)
+        if customStatus == nil then customStatus = chunkStatus end
+        rednet.broadcast("fuel=" ..
+            turtle.getFuelLevel() ..
+            ", x=" ..
+            position.x ..
+            ", y=" ..
+            position.y ..
+            ", z=" .. position.z ..
+            ", currentShafts=" .. currentshafts .. ", totalShafts=" .. totalshafts .. ", status=" .. customStatus,
+            "SethStatus")
+    end
+
+    print("Place Dump EnderChest in slot: " .. enderchest)
+    print("Place Glass EnderChest in slot: " .. glasschest)
+    print("Place Dirt in slot: " .. dirt)
+    print("Place Glass in slot: " .. glass)
+    print("Place 4 SpotLoaders in slot: " .. spotloader)
+    if liquids then print("Place Bucket in slot: " .. bucket) end
+
     if chunkStatus == "done" then
         print("Chunk has been completed")
         print("Press \"Y\" to start again or \"N\" to quit")
+        local myTimerr = os.startTimer(10)
+        --print("started timer:"..myTimerr)
         while true do
-            local event, key = os.pullEvent("key")
-            if key == keys.y then
+            local event, key = os.pullEvent()
+            --print(event.." "..key)
+            if event == "timer" and key == myTimerr then
+                --print("sending broadcast")
+                broadcast()
+                myTimerr = os.startTimer(10)
+                --print("started timer:"..myTimerr)
+            elseif event == "key" and key == keys.y then
                 chunkStatus = "moving to location"
                 saveText(chunkStatus, "chunkStatus")
                 break
-            elseif key == keys.n then
+            elseif event == "key" and key == keys.n then
                 os.shutdown()
             end
         end
     end
 
-    print("Place EnderChest in slot: " .. enderchest)
-    print("Place Dirt in slot: " .. dirt)
-    print("Place Glass in slot: " .. glass)
-    if liquids then print("Place Bucket in slot: " .. bucket) end
     print("Press any key to continue...")
 
     local myTimer = os.startTimer(10)
@@ -79,6 +105,7 @@ local function main()
 
         if event == "timer" and par1 == myTimer then
             print("I'm sick of waiting!")
+            os.cancelTimer(myTimer)
             break
         elseif event == "key" then
             print("You pressed " .. keys.getName(par1) .. "!")
@@ -180,18 +207,6 @@ local function main()
         end
 
         return ok, err -- return values turtle.turnLeft normally returns
-    end
-
-    local function broadcast(customStatus)
-        if customStatus == nil then customStatus = chunkStatus end
-        rednet.broadcast("fuel=" ..
-        turtle.getFuelLevel() ..
-        ", x=" ..
-        position.x ..
-        ", y=" ..
-        position.y ..
-        ", z=" .. position.z ..
-        ", currentShafts=" .. currentshafts .. ", totalShafts=" .. totalshafts .. ", status=" .. customStatus, "SethStatus")
     end
 
     local function gotoloc(location)
@@ -355,6 +370,27 @@ local function main()
             end
         end
         fs.delete("unstuckPosition")
+    end
+
+    local function checkGlass()
+        if turtle.getItemCount(glasschest) < 64 then
+            turtle.select(glasschest)
+            while turtle.placeUp() == false do
+                if turtle.digUp() == false then
+                    if turtle.down() == false then
+                        turtle.digDown()
+                        if turtle.down() == false then
+                            broadcast("stuck")
+                        end
+                    end
+                end
+            end
+            turtle.select(glass)
+            turtle.suckUp()
+            turtle.select(glasschest)
+            turtle.digUp()
+            turtle.select(1)
+        end
     end
 
     local function deposit()
@@ -621,7 +657,7 @@ local function main()
 
     --if x is lower then before, it means ur facing west
     --if x is higher then before, it means ur facing east
-
+    checkGlass()
 
     if turtle.getItemCount(1) == 0 then
         turtle.select(1)
@@ -697,6 +733,9 @@ local function main()
 
     deposit()
 
+    gotoloc({ x = math.floor(position.x / 16) * 16, y = floorY + 1, z = math.floor(position.z / 16) * 16 })
+    face(0)
+
     --fs.delete("chunkStatus")
     chunkStatus = "done"
     saveText(chunkStatus, "chunkStatus")
@@ -710,8 +749,8 @@ local function main()
     --rednet.broadcast("fuel="..turtle.getFuelLevel()..", x="..position.x..", y="..position.y..", z="..position.y..", currentShafts="..currentshafts..", totalShafts="..totalshafts..", status="..chunkStatus)
 end
 
-function string.startsWith(String,Start)
-   return string.sub(String,1,string.len(Start))==Start
+function string.startsWith(String, Start)
+    return string.sub(String, 1, string.len(Start)) == Start
 end
 
 local instructions = ""
@@ -720,16 +759,52 @@ local function background()
     while true do
         local id, message = rednet.receive("SethMaster")
         --if id == 0 then
-            if message == "reboot" then
-                os.reboot()
-            elseif message == "sendid" then
-                rednet.broadcast("me")
-            elseif message == "remove chunkStatus" then
-                fs.delete("chunkStatus")
-                os.reboot()
-            elseif string.startsWith(message,"goto") then
-                shell.run("wget","run","https://raw.githubusercontent.com/Saadar/ComputerCraftScripts/refs/heads/main/goto.lua",string.sub(message,6,string.len(message)))
+        if message == "reboot" then
+            os.reboot()
+        elseif message == "sendid" then
+            rednet.broadcast("me")
+        elseif message == "remove chunkStatus" then
+            fs.delete("chunkStatus")
+            os.reboot()
+        elseif string.startsWith(message, "goto") then
+            turtle.select(spotloader)
+            turtle.placeDown()
+            turtle.digUp()
+            while position.y < 260 do
+                turtle.up()
+                position.y = position.y + 1
             end
+            turtle.placeUp()
+            while position.y > floorY + 1 do
+                turtle.down()
+                position.y = position.y - 1
+            end
+            turtle.digDown()
+
+            shell.run("wget", "run",
+                "https://raw.githubusercontent.com/Saadar/ComputerCraftScripts/refs/heads/main/goto.lua",
+                string.sub(message, 6, string.len(message)))
+
+            turtle.select(spotloader)
+            while position.y > floorY + 1 do
+                turtle.down()
+                position.y = position.y - 1
+            end
+            turtle.placeDown()
+            while position.y < 260 do
+                turtle.up()
+                position.y = position.y + 1
+            end
+            turtle.digUp()
+            while position.y > floorY + 1 do
+                turtle.down()
+                position.y = position.y - 1
+            end
+            turtle.placeUp()
+            turtle.digDown()
+            if fs.exists("chunkStatus") then fs.delete("chunkStatus") end
+            os.reboot()
+        end
         --end
     end
 end
@@ -737,6 +812,6 @@ end
 while true do
     parallel.waitForAny(main, background)
     if instructions ~= "" then
-        
+
     end
 end
