@@ -285,6 +285,7 @@ detectfacing()
 
 gotoloc({ x = startx, y = floorY, z = startz })
 face(0)
+print("checking if chunk moving was restarted")
 local testt = 4
 if turtle.getItemCount(5) < 3 then
     face(2)
@@ -347,6 +348,7 @@ if turtle.getItemCount(5) < 3 then
 end
 --turtle.select(5)
 --turtle.digUp()
+print("starting the chunk moving process")
 
 while position.x < gotolocation.x do
     face(3)
