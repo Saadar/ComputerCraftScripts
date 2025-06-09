@@ -844,10 +844,7 @@ end
 
 local function background()
     if fs.exists("moveToChunk") then
-        local moveToChunk = loadText("moveToChunk")
-        shell.run("wget", "run",
-            "https://raw.githubusercontent.com/Saadar/ComputerCraftScripts/refs/heads/main/goto.lua",
-            moveToChunk)
+        gotoChunk()
     end
     while true do
         local id, message = rednet.receive("SethMaster")
