@@ -7,7 +7,6 @@ position.x, position.y, position.z = gps.locate() --{x=0,y=0,z=0}
 local function main()
     local totalshafts = 0
     local currentshafts = 0
-    local facing = 0
     local enderchest = 1
     local dirt = 2
     local glass = 3
@@ -192,7 +191,7 @@ local function main()
         ", y=" ..
         position.y ..
         ", z=" .. position.z ..
-        ", currentShafts=" .. currentshafts .. ", totalShafts=" .. totalshafts .. ", status=" .. customStatus)
+        ", currentShafts=" .. currentshafts .. ", totalShafts=" .. totalshafts .. ", status=" .. customStatus, "SethStatus")
     end
 
     local function gotoloc(location)
@@ -711,10 +710,12 @@ local function main()
     --rednet.broadcast("fuel="..turtle.getFuelLevel()..", x="..position.x..", y="..position.y..", z="..position.y..", currentShafts="..currentshafts..", totalShafts="..totalshafts..", status="..chunkStatus)
 end
 
+local instructions = ""
+
 local function background()
     while true do
-        local id, message = rednet.receive()
-        if id == 0 then
+        local id, message = rednet.receive("SethMaster")
+        --if id == 0 then
             if message == "reboot" then
                 os.reboot()
             elseif message == "sendid" then
@@ -723,8 +724,13 @@ local function background()
                 fs.delete("chunkStatus")
                 os.reboot()
             end
-        end
+        --end
     end
 end
 
-parallel.waitForAny(main, background)
+while true do
+    parallel.waitForAny(main, background)
+    if instructions ~= "" then
+        
+    end
+end
