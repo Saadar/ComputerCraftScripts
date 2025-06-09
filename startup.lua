@@ -61,7 +61,7 @@ function turtle.up()
 end
 
 local function main()
-    local totalshafts = 1
+    local totalshafts = 99
     local currentshafts = 0
     local plugHole = true
     local lowestY = -63
