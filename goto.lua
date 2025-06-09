@@ -353,19 +353,24 @@ end
 print("starting the chunk moving process")
 
 while position.x < gotolocation.x do
+    print("while position.x < gotolocation.x do")
     face(3)
     placeSpotLoadersAndMove()
 end
 while position.x > gotolocation.x do
+    print("while position.x > gotolocation.x do")
     face(1)
     placeSpotLoadersAndMove2()
 end
 while position.z < gotolocation.z do
+    print("while position.z < gotolocation.z do")
     face(0)
     placeSpotLoadersAndMove()
 end
 while position.z > gotolocation.z do
+    print("while position.z > gotolocation.z do")
     face(2)
     placeSpotLoadersAndMove2()
 end
+    print("sdfsdffdssdf")
 face(0)
