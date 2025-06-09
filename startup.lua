@@ -813,9 +813,13 @@ local function background()
                 end
             end
 
+            print("Moving to new chunk")
+
             shell.run("wget", "run",
                 "https://raw.githubusercontent.com/Saadar/ComputerCraftScripts/refs/heads/main/goto.lua",
                 string.sub(message, 6, string.len(message)))
+
+            print("Done moving to new chunk")
 
             position.x, position.y, position.z = gps.locate()
             os.sleep(1)
