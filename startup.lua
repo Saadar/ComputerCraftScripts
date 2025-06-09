@@ -787,18 +787,27 @@ local function background()
             turtle.placeDown()
             turtle.digUp()
             while position.y < 260 do
-                if turtle.up() == false then turtle.digUp() end
-                position.y = position.y + 1
+                if turtle.up() == false then
+                    turtle.digUp()
+                else
+                    position.y = position.y + 1
+                end
             end
             turtle.placeUp()
             while position.y > floorY + 1 do
-                if turtle.down() == false then turtle.digDown() end
-                position.y = position.y - 1
+                if turtle.down() == false then
+                    turtle.digDown()
+                else
+                    position.y = position.y - 1
+                end
             end
             turtle.digDown()
             while position.y < 260 do
-                if turtle.up() == false then turtle.digUp() end
-                position.y = position.y + 1
+                if turtle.up() == false then
+                    turtle.digUp()
+                else
+                    position.y = position.y + 1
+                end
             end
 
             shell.run("wget", "run",
@@ -809,18 +818,27 @@ local function background()
             os.sleep(1)
             turtle.select(spotloader)
             while position.y > floorY + 1 do
-                if turtle.down() == false then turtle.digDown() end
-                position.y = position.y - 1
+                if turtle.down() == false then
+                    turtle.digDown()
+                else
+                    position.y = position.y - 1
+                end
             end
             turtle.placeDown()
             while position.y < 260 do
-                if turtle.up() == false then turtle.digUp() end
-                position.y = position.y + 1
+                if turtle.up() == false then
+                    turtle.digUp()
+                else
+                    position.y = position.y + 1
+                end
             end
             turtle.digUp()
             while position.y > floorY + 1 do
-                if turtle.down() == false then turtle.digDown() end
-                position.y = position.y - 1
+                if turtle.down() == false then
+                    turtle.digDown()
+                else
+                    position.y = position.y - 1
+                end
             end
             turtle.placeUp()
             turtle.digDown()
