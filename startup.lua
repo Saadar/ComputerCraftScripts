@@ -710,6 +710,10 @@ local function main()
     --rednet.broadcast("fuel="..turtle.getFuelLevel()..", x="..position.x..", y="..position.y..", z="..position.y..", currentShafts="..currentshafts..", totalShafts="..totalshafts..", status="..chunkStatus)
 end
 
+function string.startsWith(String,Start)
+   return string.sub(String,1,string.len(Start))==Start
+end
+
 local instructions = ""
 
 local function background()
@@ -723,6 +727,8 @@ local function background()
             elseif message == "remove chunkStatus" then
                 fs.delete("chunkStatus")
                 os.reboot()
+            elseif string.startsWith(message,"goto") then
+                shell.run("wget","run","https://raw.githubusercontent.com/Saadar/ComputerCraftScripts/refs/heads/main/goto.lua",string.sub(message,6,string.len(message)))
             end
         --end
     end
