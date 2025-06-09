@@ -280,9 +280,11 @@ local startz = math.floor(position.z / 16) * 16
 local endx = startx + 16;
 local endz = startz + 16;
 
+print("goto detectfacing")
 local gotolocation = { x = math.floor(tonumber(arg1) / 16) * 16, y = tonumber(arg2), z = math.floor(tonumber(arg3) / 16) * 16 }
 detectfacing()
 
+print("goto gotoloc")
 gotoloc({ x = startx, y = floorY, z = startz })
 face(0)
 print("checking if chunk moving was restarted")
