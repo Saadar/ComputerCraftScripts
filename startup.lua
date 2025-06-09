@@ -758,7 +758,6 @@ local instructions = ""
 
 local function gotoChunk(moveToChunk)
     if fs.exists("moveToChunk") then
-        local moveToChunk = loadText("moveToChunk")
         shell.run("wget", "run",
             "https://raw.githubusercontent.com/Saadar/ComputerCraftScripts/refs/heads/main/goto.lua",
             moveToChunk)
@@ -844,7 +843,8 @@ end
 
 local function background()
     if fs.exists("moveToChunk") then
-        gotoChunk()
+        local moveToChunk = loadText("moveToChunk")
+        gotoChunk(moveToChunk)
     end
     while true do
         local id, message = rednet.receive("SethMaster")
