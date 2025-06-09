@@ -778,6 +778,7 @@ local function background()
             print(message)
             saveText(string.sub(message, 6, string.len(message)),"moveToChunk")
             position.x, position.y, position.z = gps.locate()
+            os.sleep(1)
             while position.y < floorY + 1 do
                 turtle.up()
                 position.y = position.y + 1
@@ -786,38 +787,39 @@ local function background()
             turtle.placeDown()
             turtle.digUp()
             while position.y < 260 do
-                turtle.up()
+                if turtle.up() == false then turtle.digUp() end
                 position.y = position.y + 1
             end
             turtle.placeUp()
             while position.y > floorY + 1 do
-                turtle.down()
+                if turtle.down() == false then turtle.digDown() end
                 position.y = position.y - 1
             end
             turtle.digDown()
             while position.y < 260 do
-                turtle.up()
+                if turtle.up() == false then turtle.digUp() end
                 position.y = position.y + 1
             end
 
             shell.run("wget", "run",
                 "https://raw.githubusercontent.com/Saadar/ComputerCraftScripts/refs/heads/main/goto.lua",
                 string.sub(message, 6, string.len(message)))
-                
+
             position.x, position.y, position.z = gps.locate()
+            os.sleep(1)
             turtle.select(spotloader)
             while position.y > floorY + 1 do
-                turtle.down()
+                if turtle.down() == false then turtle.digDown() end
                 position.y = position.y - 1
             end
             turtle.placeDown()
             while position.y < 260 do
-                turtle.up()
+                if turtle.up() == false then turtle.digUp() end
                 position.y = position.y + 1
             end
             turtle.digUp()
             while position.y > floorY + 1 do
-                turtle.down()
+                if turtle.down() == false then turtle.digDown() end
                 position.y = position.y - 1
             end
             turtle.placeUp()
