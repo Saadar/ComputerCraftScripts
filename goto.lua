@@ -1,7 +1,7 @@
 local position = { x = 0, y = 0, z = 0 }
 position.x, position.y, position.z = gps.locate() --{x=0,y=0,z=0}
 local facing = 0
-local floorY = 254
+local floorY = 260
 --( 0 = +z, 1 = -x, 2 = -z, 3 = +x )
 --Turning right = facing = (facing + 1) % 4
 --Turning left = facing = (facing - 1) % 4
