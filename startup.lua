@@ -38,6 +38,28 @@ local function loadText(name)
     return data
 end
 
+local oldDown = turtle.down
+function turtle.down()
+    local ok, err = oldDown()     -- Do the movement
+
+    if ok then                    -- if the turtle moved
+        position.y = position.y - 1
+    end
+
+    return ok, err     -- return the values turtle.forward normally returns
+end
+
+local oldUp = turtle.up
+function turtle.up()
+    local ok, err = oldUp()     -- Do the movement
+
+    if ok then                  -- if the turtle moved
+        position.y = position.y + 1
+    end
+
+    return ok, err     -- return the values turtle.forward normally returns
+end
+
 local function main()
     local totalshafts = 1
     local currentshafts = 0
@@ -161,28 +183,6 @@ local function main()
             else                    -- must be facing +x
                 position.x = position.x - 1
             end
-        end
-
-        return ok, err -- return the values turtle.forward normally returns
-    end
-
-    local oldDown = turtle.down
-    function turtle.down()
-        local ok, err = oldDown() -- Do the movement
-
-        if ok then                -- if the turtle moved
-            position.y = position.y - 1
-        end
-
-        return ok, err -- return the values turtle.forward normally returns
-    end
-
-    local oldUp = turtle.up
-    function turtle.up()
-        local ok, err = oldUp() -- Do the movement
-
-        if ok then              -- if the turtle moved
-            position.y = position.y + 1
         end
 
         return ok, err -- return the values turtle.forward normally returns
@@ -763,13 +763,11 @@ local function gotoChunk(moveToChunk)
             moveToChunk)
     else
         saveText(moveToChunk, "moveToChunk")
-        position.x, position.y, position.z = gps.locate()
-        os.sleep(1)
+        --position.x, position.y, position.z = gps.locate()
+        --os.sleep(1)
         while position.y < floorY + 1 do
             if turtle.up() == false then
                 turtle.digUp()
-            else
-                position.y = position.y + 1
             end
         end
         turtle.select(spotloader)
@@ -778,24 +776,18 @@ local function gotoChunk(moveToChunk)
         while position.y < 260 do
             if turtle.up() == false then
                 turtle.digUp()
-            else
-                position.y = position.y + 1
             end
         end
         turtle.placeUp()
         while position.y > floorY + 1 do
             if turtle.down() == false then
                 turtle.digDown()
-            else
-                position.y = position.y - 1
             end
         end
         turtle.digDown()
         while position.y < 260 do
             if turtle.up() == false then
                 turtle.digUp()
-            else
-                position.y = position.y + 1
             end
         end
 
@@ -813,24 +805,18 @@ local function gotoChunk(moveToChunk)
     while position.y > floorY + 1 do
         if turtle.down() == false then
             turtle.digDown()
-        else
-            position.y = position.y - 1
         end
     end
     turtle.placeDown()
     while position.y < 260 do
         if turtle.up() == false then
             turtle.digUp()
-        else
-            position.y = position.y + 1
         end
     end
     turtle.digUp()
     while position.y > floorY + 1 do
         if turtle.down() == false then
             turtle.digDown()
-        else
-            position.y = position.y - 1
         end
     end
     turtle.placeUp()
