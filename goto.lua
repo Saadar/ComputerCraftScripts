@@ -373,3 +373,5 @@ while position.z > gotolocation.z do
 end
 print("sdfsdffdssdf")
 face(0)
+
+print("123")
