@@ -378,8 +378,10 @@ local function main()
         if turtle.getItemCount(glass) < 64 then
             turtle.select(glasschest)
             local item = turtle.getItemDetail()
-            if item.name ~= enderchestName then
+            while item.name ~= enderchestName do
                 broadcast("stuck")
+                os.sleep(5)
+                item = turtle.getItemDetail()
             end
             while turtle.placeUp() == false do
                 if turtle.digUp() == false then
@@ -387,6 +389,7 @@ local function main()
                         turtle.digDown()
                         if turtle.down() == false then
                             broadcast("stuck")
+                            os.sleep(5)
                         end
                     end
                 end
@@ -402,8 +405,10 @@ local function main()
     local function deposit()
         turtle.select(enderchest)
         local item = turtle.getItemDetail()
-        if item.name ~= enderchestName then
+        while item.name ~= enderchestName do
             broadcast("stuck")
+            os.sleep(5)
+            item = turtle.getItemDetail()
         end
         while turtle.placeUp() == false do
             if turtle.digUp() == false then
@@ -411,6 +416,7 @@ local function main()
                     turtle.digDown()
                     if turtle.down() == false then
                         broadcast("stuck")
+                        os.sleep(5)
                     end
                 end
             end
@@ -672,19 +678,23 @@ local function main()
     if turtle.getItemCount(enderchest) == 0 then
         turtle.select(enderchest)
         turtle.digUp()
-        if turtle.getItemCount(enderchest) == 0 then
+        local item = turtle.getItemDetail()
+        while item.name ~= enderchestName do
             print("Unable to find a Ender Chest in inventory")
             broadcast("stuck")
-            return
+            os.sleep(5)
+            item = turtle.getItemDetail()
         end
     end
     if turtle.getItemCount(glasschest) == 0 then
         turtle.select(glasschest)
         turtle.digUp()
-        if turtle.getItemCount(glasschest) == 0 then
+        local item = turtle.getItemDetail()
+        while item.name ~= enderchestName do
             print("Unable to find a Glass Ender Chest in inventory")
             broadcast("stuck")
-            return
+            os.sleep(5)
+            item = turtle.getItemDetail()
         end
     end
 
