@@ -1,5 +1,6 @@
 peripheral.find("modem", rednet.open)
 local position = { x = 0, y = 0, z = 0 }
+local enderchestName = "enderchests:ender_chest"
 local facing = 0
 local enderchest = 1
 local glasschest = 2
@@ -40,24 +41,24 @@ end
 
 local oldDown = turtle.down
 function turtle.down()
-    local ok, err = oldDown()     -- Do the movement
+    local ok, err = oldDown() -- Do the movement
 
-    if ok then                    -- if the turtle moved
+    if ok then                -- if the turtle moved
         position.y = position.y - 1
     end
 
-    return ok, err     -- return the values turtle.forward normally returns
+    return ok, err -- return the values turtle.forward normally returns
 end
 
 local oldUp = turtle.up
 function turtle.up()
-    local ok, err = oldUp()     -- Do the movement
+    local ok, err = oldUp() -- Do the movement
 
-    if ok then                  -- if the turtle moved
+    if ok then              -- if the turtle moved
         position.y = position.y + 1
     end
 
-    return ok, err     -- return the values turtle.forward normally returns
+    return ok, err -- return the values turtle.forward normally returns
 end
 
 local function main()
@@ -374,7 +375,11 @@ local function main()
     end
 
     local function checkGlass()
-        if turtle.getItemCount(glasschest) < 64 then
+        if turtle.getItemCount(glass) < 64 then
+            local item = turtle.getItemDetail()
+            if item.name == enderchestName then
+                broadcast("stuck")
+            end
             turtle.select(glasschest)
             while turtle.placeUp() == false do
                 if turtle.digUp() == false then
@@ -396,6 +401,10 @@ local function main()
 
     local function deposit()
         turtle.select(enderchest)
+        local item = turtle.getItemDetail()
+        if item.name == enderchestName then
+            broadcast("stuck")
+        end
         while turtle.placeUp() == false do
             if turtle.digUp() == false then
                 if turtle.down() == false then
@@ -660,11 +669,21 @@ local function main()
     --if x is higher then before, it means ur facing east
     checkGlass()
 
-    if turtle.getItemCount(1) == 0 then
-        turtle.select(1)
+    if turtle.getItemCount(enderchest) == 0 then
+        turtle.select(enderchest)
         turtle.digUp()
-        if turtle.getItemCount(1) == 0 then
+        if turtle.getItemCount(enderchest) == 0 then
             print("Unable to find a Ender Chest in inventory")
+            broadcast("stuck")
+            return
+        end
+    end
+    if turtle.getItemCount(glasschest) == 0 then
+        turtle.select(glasschest)
+        turtle.digUp()
+        if turtle.getItemCount(glasschest) == 0 then
+            print("Unable to find a Glass Ender Chest in inventory")
+            broadcast("stuck")
             return
         end
     end
