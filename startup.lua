@@ -376,11 +376,11 @@ local function main()
 
     local function checkGlass()
         if turtle.getItemCount(glass) < 64 then
+            turtle.select(glasschest)
             local item = turtle.getItemDetail()
             if item.name == enderchestName then
                 broadcast("stuck")
             end
-            turtle.select(glasschest)
             while turtle.placeUp() == false do
                 if turtle.digUp() == false then
                     if turtle.down() == false then
