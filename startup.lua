@@ -378,7 +378,7 @@ local function main()
         if turtle.getItemCount(glass) < 64 then
             turtle.select(glasschest)
             local item = turtle.getItemDetail()
-            if item.name == enderchestName then
+            if item.name ~= enderchestName then
                 broadcast("stuck")
             end
             while turtle.placeUp() == false do
@@ -402,7 +402,7 @@ local function main()
     local function deposit()
         turtle.select(enderchest)
         local item = turtle.getItemDetail()
-        if item.name == enderchestName then
+        if item.name ~= enderchestName then
             broadcast("stuck")
         end
         while turtle.placeUp() == false do
