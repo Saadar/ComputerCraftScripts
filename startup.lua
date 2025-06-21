@@ -9,7 +9,7 @@ local glass = 4
 local spotloader = 5
 local bucket = 4
 local floorY = 253
-useGlassChest = false
+local useGlassChest = false
 os.setComputerLabel("SethBot" .. os.getComputerID())
 os.sleep(2)
 position.x, position.y, position.z = gps.locate() --{x=0,y=0,z=0}
