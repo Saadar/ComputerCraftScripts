@@ -9,6 +9,7 @@ local glass = 4
 local spotloader = 5
 local bucket = 4
 local floorY = 253
+useGlassChest = false
 os.setComputerLabel("SethBot" .. os.getComputerID())
 os.sleep(2)
 position.x, position.y, position.z = gps.locate() --{x=0,y=0,z=0}
@@ -376,7 +377,7 @@ local function main()
     end
 
     local function checkGlass()
-        if turtle.getItemCount(glass) < 64 then
+        if turtle.getItemCount(glass) < 64 and useGlassChest then
             turtle.select(glasschest)
             local item = turtle.getItemDetail()
             while item.name ~= enderchestName do
