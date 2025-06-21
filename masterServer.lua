@@ -62,7 +62,7 @@ local function printCoords(x, z, percent)
             x = tempinfo.x
             z = tempinfo.z
         else
-            return
+            goto endOfPrintCoords
         end
     end
     local info = { x = 0, z = 0, count = 1, facing = 0, i = 1, k = 1 }
@@ -126,6 +126,7 @@ local function printCoords(x, z, percent)
         info.k = 1
         info.count = info.count + 1
     end
+    ::endOfPrintCoords::
 end
 
 local function getNewCoords()
